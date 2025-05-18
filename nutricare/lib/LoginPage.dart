@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nutricare/RegisterPage.dart'; // Pastikan path-nya sesuai
+import 'RegisterPage.dart'; // Pastikan path-nya sesuai
+import 'HomePage.dart';
 
 class LoginPage extends StatelessWidget {
   final TextEditingController usernameController = TextEditingController();
@@ -18,16 +19,15 @@ class LoginPage extends StatelessWidget {
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
-            // Placeholder gambar atas
+            // Logo Nutricare
             Container(
               width: 250,
               height: 150,
               child: Image.asset(
-                'assets/images/Nutricare.png', // Ganti dengan path logo kamu
-                fit: BoxFit.contain, // Biar logonya muat
+                'assets/images/Nutricare.png',
+                fit: BoxFit.contain,
               ),
             ),
-
             SizedBox(height: 16),
             Text(
               'LOGIN',
@@ -57,7 +57,26 @@ class LoginPage extends StatelessWidget {
             SizedBox(height: 24),
             ElevatedButton(
               onPressed: () {
-                // aksi login
+                String username = usernameController.text;
+                String password = passwordController.text;
+
+                if (username == "admin" && password == "admin") {
+                  // Tampilkan notifikasi berhasil
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Login berhasil!")),
+                  );
+
+                  // Navigasi ke HomePage
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  );
+                } else {
+                  // Tampilkan notifikasi gagal
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Username atau password salah")),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 221, 235, 157),
@@ -83,19 +102,4 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
-}
-
-class XCrossPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint =
-        Paint()
-          ..color = Colors.black
-          ..strokeWidth = 1;
-    canvas.drawLine(Offset(0, 0), Offset(size.width, size.height), paint);
-    canvas.drawLine(Offset(size.width, 0), Offset(0, size.height), paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
