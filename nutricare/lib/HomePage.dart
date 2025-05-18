@@ -45,7 +45,10 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text("Hai!", style: TextStyle(fontSize: 16)),
-                      Text("Nama users", style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(
+                        "Nama users",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                 ],
@@ -60,7 +63,11 @@ class _HomePageState extends State<HomePage> {
                   color: const Color.fromARGB(255, 203, 211, 169),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
-                    BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 6,
+                      offset: Offset(0, 3),
+                    ),
                   ],
                 ),
                 child: Row(
@@ -72,12 +79,21 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Menu Makan Gratis Hari Ini",
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+                          Text(
+                            "Menu Makan Gratis Hari Ini",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
                           SizedBox(height: 8),
                           Text(
                             "• Nasi Putih\n• Ayam Bakar\n• Sayur Bayam\n• Buah Pisang\n• Air Mineral",
-                            style: TextStyle(fontSize: 14, color: Colors.grey[800]),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[800],
+                            ),
                           ),
                         ],
                       ),
@@ -88,7 +104,10 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: 24),
 
               // Distribusi
-              Text("Distribusi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(
+                "Distribusi",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -108,15 +127,21 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: 24),
 
               // Video Edukasi
-              Text("Video edukasi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(
+                "Video edukasi",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               SizedBox(height: 12),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: List.generate(videoLinks.length, (index) {
                     final videoUrl = videoLinks[index];
-                    final videoId = Uri.parse(videoUrl).queryParameters['v'] ?? videoUrl.split('/').last;
-                    final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/0.jpg';
+                    final videoId =
+                        Uri.parse(videoUrl).queryParameters['v'] ??
+                        videoUrl.split('/').last;
+                    final thumbnailUrl =
+                        'https://img.youtube.com/vi/$videoId/0.jpg';
                     final title = videoTitles[index];
 
                     return GestureDetector(
@@ -134,18 +159,22 @@ class _HomePageState extends State<HomePage> {
                                 width: 150,
                                 height: 100,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) => Container(
-                                  color: Colors.grey,
-                                  width: 150,
-                                  height: 100,
-                                  child: Icon(Icons.broken_image),
-                                ),
+                                errorBuilder:
+                                    (context, error, stackTrace) => Container(
+                                      color: Colors.grey,
+                                      width: 150,
+                                      height: 100,
+                                      child: Icon(Icons.broken_image),
+                                    ),
                               ),
                             ),
                             SizedBox(height: 6),
                             Text(
                               title,
-                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ],
                         ),
@@ -198,7 +227,10 @@ class _HomePageState extends State<HomePage> {
       },
       onScaleUpdate: (details) {
         setState(() {
-          double newScale = (_previousScales[index]! * details.scale).clamp(1.0, 3.0);
+          double newScale = (_previousScales[index]! * details.scale).clamp(
+            1.0,
+            3.0,
+          );
           _scales[index] = newScale;
         });
       },
@@ -213,7 +245,11 @@ class _HomePageState extends State<HomePage> {
             color: boxColor,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
-              BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 6,
+                offset: Offset(0, 3),
+              ),
             ],
           ),
           child: Column(
