@@ -13,10 +13,10 @@ class InputPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(color: Colors.black),
-        backgroundColor: Colors.white,
+        backgroundColor:const Color.fromARGB(255, 255, 246, 233),
         elevation: 0,
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 255, 246, 233),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -53,7 +53,7 @@ class InputPage extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[300],
+                  backgroundColor: const Color.fromARGB(255, 221, 235, 157),
                 ),
                 child: Text("INSERT", style: TextStyle(color: Colors.black)),
               ),

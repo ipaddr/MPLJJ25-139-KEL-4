@@ -20,10 +20,10 @@ class ConfirmationPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(color: Colors.black),
-        backgroundColor: Colors.white,
+        backgroundColor: const Color.fromARGB(255, 255, 246, 233),
         elevation: 0,
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 255, 246, 233),
       body: Center(
         child: Column(
           children: [
@@ -32,18 +32,18 @@ class ConfirmationPage extends StatelessWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: const Color.fromARGB(255,160, 200, 120),
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.black),
+                border: Border.all(color: Colors.white),
               ),
-              child: Icon(Icons.check, size: 40),
+              child: Icon(Icons.check, size: 40), 
             ),
             SizedBox(height: 40),
             Container(
               width: 300,
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: const Color.fromARGB(255, 221, 235, 157),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
