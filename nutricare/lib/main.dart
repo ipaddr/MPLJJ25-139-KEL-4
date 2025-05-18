@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'WelcomePage.dart';
 
 void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: WelcomePage(),
-  ));
+  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: WelcomePage()));
 }
 
 class MyApp extends StatelessWidget {

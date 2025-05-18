@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:nutricare/RegisterPage.dart'; // Pastikan path-nya sesuai
 
 class LoginPage extends StatelessWidget {
   final TextEditingController usernameController = TextEditingController();
@@ -68,13 +68,16 @@ class LoginPage extends StatelessWidget {
             Spacer(),
             TextButton(
               onPressed: () {
-                // aksi ke halaman daftar
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RegisterPage()),
+                );
               },
               child: Text(
                 'Tidak mempunyai akun ? Daftar',
                 style: TextStyle(color: Colors.black),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -85,9 +88,10 @@ class LoginPage extends StatelessWidget {
 class XCrossPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.black
-      ..strokeWidth = 1;
+    final paint =
+        Paint()
+          ..color = Colors.black
+          ..strokeWidth = 1;
     canvas.drawLine(Offset(0, 0), Offset(size.width, size.height), paint);
     canvas.drawLine(Offset(size.width, 0), Offset(0, size.height), paint);
   }
