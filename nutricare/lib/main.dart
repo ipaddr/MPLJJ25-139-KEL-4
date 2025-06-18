@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart'; // Import ini
+import 'firebase_options.dart';
 import 'WelcomePage.dart';
 
-void main() {
+
+void main() async { // <<<--- TAMBAHKAN 'async'
+  WidgetsFlutterBinding.ensureInitialized(); // <<<--- TAMBAHKAN BARIS INI
+  await Firebase.initializeApp( // <<<--- TAMBAHKAN BLOK INI UNTUK INISIALISASI FIREBASE
+    options: DefaultFirebaseOptions.currentPlatform, // <<<--- UNCOMMENT INI JIKA MENGGUNAKAN FLUTTERFIRE CLI
+  );
   runApp(MaterialApp(debugShowCheckedModeBanner: false, home: WelcomePage()));
 }
 

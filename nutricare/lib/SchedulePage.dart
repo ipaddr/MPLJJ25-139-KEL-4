@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'edit_schedule_page.dart'; // Import the new edit page
 
-class SchedulePage extends StatelessWidget {
+class SchedulePage extends StatefulWidget {
   const SchedulePage({Key? key}) : super(key: key);
 
-  final List<Map<String, String>> scheduleData = const [
+  @override
+  State<SchedulePage> createState() => _SchedulePageState();
+}
+
+class _SchedulePageState extends State<SchedulePage> {
+  // Make scheduleData mutable as we'll be editing it directly here
+  List<Map<String, String>> scheduleData = [
     {
       "time": "08:45",
       "date": "Today",
@@ -33,6 +40,16 @@ class SchedulePage extends StatelessWidget {
       "task2": "Take vitamins"
     },
   ];
+
+  // Function to update an item in the list
+  void _updateScheduleItem(int index, Map<String, String> updatedItem) {
+    setState(() {
+      scheduleData[index] = updatedItem;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Jadwal berhasil diperbarui!')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,14 +87,39 @@ class SchedulePage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    // Right Side: Time
-                    Text(
-                      item['time']!,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
+                    // Right Side: Time and Edit button
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          item['time']!,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        IconButton(
+                          icon: const Icon(Icons.edit, color: Colors.blue),
+                          onPressed: () async {
+                            // Navigate to EditSchedulePage and wait for result
+                            final updatedItem = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditSchedulePage(
+                                  initialData: Map<String, String>.from(item), // Pass a copy of the item
+                                ),
+                              ),
+                            );
+
+                            // If an updated item is returned, update the list
+                            if (updatedItem != null && updatedItem is Map<String, String>) {
+                              _updateScheduleItem(index, updatedItem);
+                            }
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),

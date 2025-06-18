@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:nutricare/InputPage.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'ProfilePage.dart';
+import 'DataPage.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 
-import 'ProfilePage.dart';
-import 'DataPage.dart';
-// import 'InputPage.dart'; // Jika InputPage akan selalu tersedia, Anda bisa uncomment ini
-
-class HomePage extends StatefulWidget {
+class AdminHomepage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _AdminHomepageState createState() => _AdminHomepageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _AdminHomepageState extends State<AdminHomepage> {
   int _currentIndex = 0;
 
   Map<int, double> _scales = {0: 1.0, 1: 1.0};
   Map<int, double> _previousScales = {0: 1.0, 1: 1.0};
 
-  // Instance Firebase
+ // Instance Firebase
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -43,7 +42,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _pages = [
       _buildHomeContent(), // Gunakan konten khusus beranda
-      // InputPage(), // Tambahkan kembali jika InputPage diperlukan di bottom nav untuk guru/admin
+      InputPage(), // Tambahkan kembali jika InputPage diperlukan di bottom nav untuk guru/admin
       DataPage(),
       ProfilePage(),
     ];
@@ -65,7 +64,7 @@ class _HomePageState extends State<HomePage> {
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
-          // BottomNavigationBarItem(icon: Icon(Icons.edit), label: 'Input'), // Tambahkan kembali jika InputPage diperlukan
+          BottomNavigationBarItem(icon: Icon(Icons.edit), label: 'Input'), // Tambahkan kembali jika InputPage diperlukan
           BottomNavigationBarItem(icon: Icon(Icons.data_usage), label: 'Data'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],

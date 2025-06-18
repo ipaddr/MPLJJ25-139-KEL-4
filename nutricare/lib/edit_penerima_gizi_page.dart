@@ -1,26 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'ConfirmationPage.dart'; // Import ConfirmationPage
+import 'PenerimaGiziPage.dart'; // Import model PenerimaGizi
 
-class InputPage extends StatefulWidget {
+class EditPenerimaGiziPage extends StatefulWidget {
+  final PenerimaGizi penerima; // Menerima objek PenerimaGizi yang akan diedit
+
+  const EditPenerimaGiziPage({Key? key, required this.penerima}) : super(key: key);
+
   @override
-  _InputPageState createState() => _InputPageState();
+  _EditPenerimaGiziPageState createState() => _EditPenerimaGiziPageState();
 }
 
-class _InputPageState extends State<InputPage> {
+class _EditPenerimaGiziPageState extends State<EditPenerimaGiziPage> {
+  final _formKey = GlobalKey<FormState>();
+
   final TextEditingController namaController = TextEditingController();
   final TextEditingController nisnController = TextEditingController();
   final TextEditingController tempatLahirController = TextEditingController();
   final TextEditingController ibuController = TextEditingController();
 
   final TextEditingController tanggalLahirController = TextEditingController();
-  DateTime? _selectedDate;
-
-  final _formKey = GlobalKey<FormState>();
+  DateTime? _selectedDate; // Untuk menyimpan objek DateTime yang dipilih
 
   @override
   void initState() {
     super.initState();
+    // Inisialisasi controller dengan data penerima yang ada
+    namaController.text = widget.penerima.nama;
+    nisnController.text = widget.penerima.nisn;
+    tempatLahirController.text = widget.penerima.tempatLahir;
+    tanggalLahirController.text = widget.penerima.tanggalLahir;
+    ibuController.text = widget.penerima.namaIbuKandung;
+
+    // Parse tanggal lahir string ke DateTime untuk date picker
+    if (widget.penerima.tanggalLahir.isNotEmpty) {
+      try {
+        List<String> parts = widget.penerima.tanggalLahir.split('-');
+        if (parts.length == 3) {
+          _selectedDate = DateTime(
+            int.parse(parts[2]), // Year
+            int.parse(parts[1]), // Month
+            int.parse(parts[0]), // Day
+          );
+        }
+      } catch (e) {
+        print("Error parsing initial date: ${e}");
+      }
+    }
   }
 
   @override
@@ -33,6 +59,7 @@ class _InputPageState extends State<InputPage> {
     super.dispose();
   }
 
+  // Fungsi untuk menampilkan DatePicker (sama seperti di InputPage)
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -68,76 +95,38 @@ class _InputPageState extends State<InputPage> {
     }
   }
 
-  // Helper untuk menghitung usia dari tanggal lahir (mirip dengan di model)
-  int _calculateAge(DateTime? birthDate) {
-    if (birthDate == null) return 0;
-
-    DateTime today = DateTime.now();
-    int age = today.year - birthDate.year;
-    if (today.month < birthDate.month ||
-        (today.month == birthDate.month && today.day < birthDate.day)) {
-      age--;
-    }
-    return age;
-  }
-
-
-  Future<void> _saveRecipientData() async {
+  // Fungsi untuk memperbarui data di Firestore
+  Future<void> _updateRecipientData() async {
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Menyimpan data penerima...')),
+        SnackBar(content: Text('Memperbarui data penerima...')),
       );
 
       try {
-        // Simpan data ke Firestore
-        await FirebaseFirestore.instance.collection('recipients').add({
+        // Memperbarui dokumen di Firestore berdasarkan ID
+        await FirebaseFirestore.instance
+            .collection('recipients')
+            .doc(widget.penerima.id) // Menggunakan ID dokumen dari objek penerima
+            .update({
           'nama': namaController.text,
           'nisn': nisnController.text,
           'tempatLahir': tempatLahirController.text,
-          'tanggalLahir': tanggalLahirController.text, // Simpan sebagai String
+          'tanggalLahir': tanggalLahirController.text,
           'namaIbuKandung': ibuController.text,
-          'createdAt': Timestamp.now(),
+          // createdAt tidak perlu diupdate
         });
 
-        // Hitung usia untuk diteruskan ke ConfirmationPage
-        int usiaPenerima = _calculateAge(_selectedDate);
-
-        // Bersihkan field setelah berhasil disimpan (opsional, tergantung alur Anda)
-        // Jika ingin membersihkan, lakukan ini SEBELUM navigasi ke ConfirmationPage
-        String tempNama = namaController.text;
-        String tempNisn = nisnController.text;
-        String tempTempatLahir = tempatLahirController.text;
-        String tempTanggalLahir = tanggalLahirController.text;
-        String tempIbu = ibuController.text;
-
-        namaController.clear();
-        nisnController.clear();
-        tempatLahirController.clear();
-        tanggalLahirController.clear();
-        ibuController.clear();
-        setState(() {
-          _selectedDate = null; // Reset tanggal yang dipilih
-        });
-
-        // Navigasi ke ConfirmationPage dengan membawa data yang baru saja diinput
-        Navigator.pushReplacement( // Menggunakan pushReplacement agar tidak bisa kembali ke halaman input dengan tombol back
-          context,
-          MaterialPageRoute(
-            builder: (context) => ConfirmationPage(
-              nama: tempNama,
-              nisn: tempNisn,
-              tempatLahir: tempTempatLahir,
-              tanggalLahir: tempTanggalLahir,
-              namaIbuKandung: tempIbu,
-              usia: usiaPenerima, // Teruskan usia yang dihitung
-            ),
-          ),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Data penerima berhasil diperbarui!')),
         );
 
+        // Kembali ke halaman daftar penerima gizi setelah berhasil update
+        Navigator.pop(context);
+
       } catch (e) {
-        print('Error saving recipient data: $e');
+        print('Error updating recipient data: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan data: $e')),
+          SnackBar(content: Text('Gagal memperbarui data: $e')),
         );
       }
     }
@@ -150,6 +139,8 @@ class _InputPageState extends State<InputPage> {
         leading: BackButton(color: Colors.black),
         backgroundColor: const Color.fromARGB(255, 255, 246, 233),
         elevation: 0,
+        title: const Text('Edit Data Penerima Gizi', style: TextStyle(color: Colors.black)),
+        centerTitle: true,
       ),
       backgroundColor: const Color.fromARGB(255, 255, 246, 233),
       body: Padding(
@@ -161,7 +152,7 @@ class _InputPageState extends State<InputPage> {
             children: [
               Center(
                 child: Text(
-                  "INPUT",
+                  "EDIT", // Ganti judul halaman
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -200,11 +191,11 @@ class _InputPageState extends State<InputPage> {
               SizedBox(height: 32),
               Center(
                 child: ElevatedButton(
-                  onPressed: _saveRecipientData,
+                  onPressed: _updateRecipientData, // Panggil fungsi update
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 221, 235, 157),
                   ),
-                  child: Text("INSERT", style: TextStyle(color: Colors.black)),
+                  child: Text("UPDATE", style: TextStyle(color: Colors.black)), // Ubah teks tombol
                 ),
               ),
             ],

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "818340725320",
+    "project_id": "nutricare16",
+    "storage_bucket": "nutricare16.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:818340725320:android:27a262b86763abbf860e7d",
+        "android_client_info": {
+          "package_name": "com.example.nutricare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCC2LCGuZuosvJ5jLyn2xyLeSNDhTeYNgs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
