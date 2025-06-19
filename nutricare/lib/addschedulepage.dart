@@ -1,42 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class EditSchedulePage extends StatefulWidget {
-  // initialData berisi nilai-nilai saat ini untuk diisi di form
-  final Map<String, dynamic> initialData;
-  // documentId diperlukan untuk mengetahui dokumen mana yang akan diupdate di Firestore
-  final String documentId;
-
-  const EditSchedulePage({
-    Key? key,
-    required this.initialData,
-    required this.documentId, // <--- Pastikan parameter ini ada dan diperlukan
-  }) : super(key: key);
+class AddSchedulePage extends StatefulWidget {
+  const AddSchedulePage({Key? key}) : super(key: key);
 
   @override
-  State<EditSchedulePage> createState() => _EditSchedulePageState();
+  State<AddSchedulePage> createState() => _AddSchedulePageState();
 }
 
-class _EditSchedulePageState extends State<EditSchedulePage> {
+class _AddSchedulePageState extends State<AddSchedulePage> {
   final _formKey = GlobalKey<FormState>();
 
   // Controllers for the input fields
-  late TextEditingController _timeController;
-  late TextEditingController _dateController; // For "Today" / "Tomorrow" etc.
-  late TextEditingController _fullDateController; // For "17 April 2019"
-  late TextEditingController _task1Controller;
-  late TextEditingController _task2Controller;
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize controllers with the initial data received
-    _timeController = TextEditingController(text: widget.initialData['time'] ?? '');
-    _dateController = TextEditingController(text: widget.initialData['date'] ?? '');
-    _fullDateController = TextEditingController(text: widget.initialData['fullDate'] ?? '');
-    _task1Controller = TextEditingController(text: widget.initialData['task1'] ?? '');
-    _task2Controller = TextEditingController(text: widget.initialData['task2'] ?? '');
-  }
+  final TextEditingController _timeController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _fullDateController = TextEditingController();
+  final TextEditingController _task1Controller = TextEditingController();
+  final TextEditingController _task2Controller = TextEditingController();
 
   @override
   void dispose() {
@@ -48,42 +28,38 @@ class _EditSchedulePageState extends State<EditSchedulePage> {
     super.dispose();
   }
 
-  // Fungsi untuk menyimpan perubahan ke Firestore
-  Future<void> _saveChanges() async {
+  // Fungsi untuk menyimpan jadwal baru ke Firestore
+  Future<void> _saveNewSchedule() async {
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Menyimpan perubahan jadwal...')),
+        const SnackBar(content: Text('Menyimpan jadwal baru...')),
       );
 
       try {
-        // Buat map dengan nilai-nilai yang diperbarui
-        final Map<String, dynamic> updatedData = {
+        final Map<String, dynamic> newScheduleData = {
           'time': _timeController.text,
           'date': _dateController.text,
           'fullDate': _fullDateController.text,
           'task1': _task1Controller.text,
           'task2': _task2Controller.text,
-          'updatedAt': Timestamp.now(), // Tambahkan timestamp pembaruan
+          'createdAt': Timestamp.now(), // Tambahkan timestamp pembuatan
+          'updatedAt': Timestamp.now(), // Tambahkan timestamp pembaruan awal
         };
 
-        // Perbarui dokumen di koleksi 'schedules' di Firestore
-        await FirebaseFirestore.instance
-            .collection('schedules')
-            .doc(widget.documentId) // Gunakan documentId yang diterima
-            .update(updatedData);
+        await FirebaseFirestore.instance.collection('schedules').add(newScheduleData);
 
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Jadwal berhasil diperbarui!')),
+          const SnackBar(content: Text('Jadwal baru berhasil ditambahkan!')),
         );
 
-        // Kembali ke halaman sebelumnya (SchedulePage)
-        Navigator.pop(context, true); // Mengirim true untuk menunjukkan pembaruan berhasil
+        // Kembali ke halaman sebelumnya (ScheduleListPage)
+        Navigator.pop(context, true); // Mengirim true untuk menunjukkan penambahan berhasil
       } catch (e) {
-        print('Error updating schedule data: $e');
+        print('Error adding new schedule: $e');
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal memperbarui jadwal: $e')),
+          SnackBar(content: Text('Gagal menambahkan jadwal: $e')),
         );
       }
     }
@@ -94,7 +70,7 @@ class _EditSchedulePageState extends State<EditSchedulePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 221, 235, 157),
-        title: const Text('Edit Jadwal', style: TextStyle(color: Colors.black)),
+        title: const Text('Tambah Jadwal Baru', style: TextStyle(color: Colors.black)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -106,7 +82,7 @@ class _EditSchedulePageState extends State<EditSchedulePage> {
             children: [
               const Center(
                 child: Text(
-                  "EDIT JADWAL",
+                  "TAMBAH JADWAL",
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -129,13 +105,13 @@ class _EditSchedulePageState extends State<EditSchedulePage> {
               const SizedBox(height: 32),
               Center(
                 child: ElevatedButton(
-                  onPressed: _saveChanges,
+                  onPressed: _saveNewSchedule,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 221, 235, 157),
                     padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
-                  child: const Text('Simpan Perubahan', style: TextStyle(color: Colors.black)),
+                  child: const Text('Tambah Jadwal', style: TextStyle(color: Colors.black)),
                 ),
               ),
             ],
@@ -149,7 +125,7 @@ class _EditSchedulePageState extends State<EditSchedulePage> {
     required TextEditingController controller,
     required String label,
     String? Function(String?)? validator,
-    TextInputType keyboardType = TextInputType.text,
+    TextInputType keyboardType = TextInputType.text,     
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),

@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 
 import 'ProfilePage.dart';
 import 'DataPage.dart';
+import 'ChatbotPage.dart'; // Import the new ChatbotPage
 // import 'InputPage.dart'; // Jika InputPage akan selalu tersedia, Anda bisa uncomment ini
 
 class HomePage extends StatefulWidget {
@@ -77,7 +78,7 @@ class _HomePageState extends State<HomePage> {
     // Pastikan user tidak null sebelum mencoba mengambil UID
     if (_auth.currentUser == null) {
       // Handle case where user is not logged in (shouldn't happen if login check is correct)
-      return Center(child: Text("User not logged in. Please log in again."));
+      return const Center(child: Text("User not logged in. Please log in again."));
     }
 
     return FutureBuilder<DocumentSnapshot>(
@@ -91,7 +92,7 @@ class _HomePageState extends State<HomePage> {
 
         // Menampilkan pesan jika dokumen tidak ditemukan (misal: user baru tanpa data profil di Firestore)
         if (snapshot.connectionState == ConnectionState.done && !snapshot.hasData) {
-          return Center(child: Text("Data profil tidak ditemukan."));
+          return const Center(child: Text("Data profil tidak ditemukan."));
         }
         
         // Memastikan data ada sebelum diakses dan koneksi sudah selesai
@@ -104,51 +105,62 @@ class _HomePageState extends State<HomePage> {
           // String userRole = data?['role'] ?? "N/A"; // Jika ingin menampilkan role juga
 
           return SingleChildScrollView(
-            padding: EdgeInsets.all(24),
+            padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header
                 Row(
                   children: [
-                    Icon(Icons.account_circle, size: 40),
-                    SizedBox(width: 8),
+                    const Icon(Icons.account_circle, size: 40),
+                    const SizedBox(width: 8),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Hai!", style: TextStyle(fontSize: 16)),
+                        const Text("Hai!", style: TextStyle(fontSize: 16)),
                         // Menampilkan nama user yang diambil dari Firestore
-                        Text(userName, style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(userName, style: const TextStyle(fontWeight: FontWeight.bold)),
                         // Text("Role: $userRole", style: TextStyle(fontSize: 12, color: Colors.grey[600])), // Contoh menampilkan role
                       ],
                     ),
+                    const Spacer(), // Pushes the next widget to the right
+                    IconButton(
+                      icon: const Icon(Icons.chat_bubble_outline, size: 28), // Chat icon
+                      onPressed: () {
+                        // Navigasi ke halaman ChatbotPage
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ChatbotPage()),
+                        );
+                      },
+                    ),
                   ],
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
 
                 // Notifikasi Menu Hari Ini
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: const Color.fromARGB(255, 203, 211, 169),
                     borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
                     ],
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.restaurant_menu, size: 40, color: Colors.black),
-                      SizedBox(width: 16),
+                      const Icon(Icons.restaurant_menu, size: 40, color: Colors.black),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Menu Makan Gratis Hari Ini",
+                            const Text("Menu Makan Gratis Hari Ini",
                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Text(
                               "• Nasi Putih\n• Ayam Bakar\n• Sayur Bayam\n• Buah Pisang\n• Air Mineral",
                               style: TextStyle(fontSize: 14, color: Colors.grey[800]),
@@ -159,11 +171,11 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
 
                 // Distribusi
-                Text("Distribusi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                SizedBox(height: 24),
+                const Text("Distribusi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -171,17 +183,18 @@ class _HomePageState extends State<HomePage> {
                     _buildDistribusiItem(index: 1, imagePath: 'assets/images/datagizi.jpeg', title: 'Data Penerima Gizi'),
                   ],
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
 
                 // Video Edukasi
-                Text("Video edukasi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                SizedBox(height: 12),
+                const Text("Video edukasi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: List.generate(videoLinks.length, (index) {
                       final videoUrl = videoLinks[index];
-                      final videoId = Uri.parse(videoUrl).queryParameters['v'] ?? videoUrl.split('/').last; // videoId tidak digunakan, bisa dihapus
+                      // videoId tidak digunakan, bisa dihapus
+                      final videoId = Uri.parse(videoUrl).queryParameters['v'] ?? videoUrl.split('/').last; 
                       final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/0.jpg';
                       final title = videoTitles[index];
 
@@ -189,7 +202,7 @@ class _HomePageState extends State<HomePage> {
                         onTap: () => _launchUrl(videoUrl),
                         child: Container(
                           width: 150,
-                          margin: EdgeInsets.only(right: 10),
+                          margin: const EdgeInsets.only(right: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -204,12 +217,12 @@ class _HomePageState extends State<HomePage> {
                                     color: Colors.grey,
                                     width: 150,
                                     height: 100,
-                                    child: Icon(Icons.broken_image),
+                                    child: const Icon(Icons.broken_image),
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 6),
-                              Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                              const SizedBox(height: 6),
+                              Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                             ],
                           ),
                         ),
@@ -223,7 +236,7 @@ class _HomePageState extends State<HomePage> {
         }
 
         // Menampilkan CircularProgressIndicator saat data sedang diambil
-        return Center(child: CircularProgressIndicator());
+        return const Center(child: CircularProgressIndicator());
       },
     );
   }
@@ -261,14 +274,14 @@ class _HomePageState extends State<HomePage> {
           decoration: BoxDecoration(
             color: boxColor,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [
+            boxShadow: const [ // Perbaikan di sini: menghapus 'box' yang berlebihan
               BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
             ],
           ),
           child: Column(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                 child: Image.asset(
                   imagePath,
                   width: 200,
@@ -281,7 +294,7 @@ class _HomePageState extends State<HomePage> {
                 child: Text(
                   title,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                 ),
               ),
             ],

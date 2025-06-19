@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Make sure to add firebase_auth to your pubspec.yaml
+
+import 'EditProfilePage.dart'; // Tetap import ini meskipun tidak digunakan di InputPage
+import 'FaqPage.dart'; // Tetap import ini meskipun tidak digunakan di InputPage
+import 'LoginPage.dart'; // Tetap import ini meskipun tidak digunakan di InputPage
 import 'ConfirmationPage.dart'; // Import ConfirmationPage
 
 class InputPage extends StatefulWidget {
@@ -45,8 +50,8 @@ class _InputPageState extends State<InputPage> {
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            colorScheme: ColorScheme.light(
-              primary: const Color.fromARGB(255, 221, 235, 157),
+            colorScheme: const ColorScheme.light(
+              primary: Color.fromARGB(255, 221, 235, 157),
               onPrimary: Colors.black,
               onSurface: Colors.black,
             ),
@@ -81,11 +86,10 @@ class _InputPageState extends State<InputPage> {
     return age;
   }
 
-
   Future<void> _saveRecipientData() async {
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Menyimpan data penerima...')),
+        const SnackBar(content: Text('Menyimpan data penerima...')),
       );
 
       try {
@@ -133,7 +137,6 @@ class _InputPageState extends State<InputPage> {
             ),
           ),
         );
-
       } catch (e) {
         print('Error saving recipient data: $e');
         ScaffoldMessenger.of(context).showSnackBar(
@@ -147,7 +150,7 @@ class _InputPageState extends State<InputPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(color: Colors.black),
+        leading: const BackButton(color: Colors.black),
         backgroundColor: const Color.fromARGB(255, 255, 246, 233),
         elevation: 0,
       ),
@@ -159,27 +162,64 @@ class _InputPageState extends State<InputPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
+              const Center(
                 child: Text(
                   "INPUT",
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
               ),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
               buildInputField("Nama", namaController),
-              buildInputField("NISN", nisnController, keyboardType: TextInputType.number),
-              buildInputField("Tempat Lahir", tempatLahirController),
+              // NISN Field with validation
+              buildInputField("NISN", nisnController,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'NISN tidak boleh kosong';
+                    }
+                    // Validasi: NISN harus memiliki minimal 10 karakter (lebih dari 9 angka)
+                    if (value.length < 10) {
+                      return 'NISN harus memiliki minimal 10 angka';
+                    }
+                    return null;
+                  }),
+              // Tempat Lahir field tanpa tombol auto-fill geolokasi
               Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
                 child: Row(
                   children: [
-                    SizedBox(width: 100, child: Text("Tanggal Lahir")),
+                    const SizedBox(width: 100, child: Text("Tempat Lahir")),
+                    Expanded(
+                      child: TextFormField(
+                        controller: tempatLahirController,
+                        decoration: const InputDecoration(
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(vertical: 4),
+                          border: UnderlineInputBorder(),
+                          // SuffixIcon yang sebelumnya untuk geolokasi telah dihapus
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Tempat lahir tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: Row(
+                  children: [
+                    const SizedBox(width: 100, child: Text("Tanggal Lahir")),
                     Expanded(
                       child: TextFormField(
                         controller: tanggalLahirController,
                         readOnly: true,
                         onTap: () => _selectDate(context),
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           isDense: true,
                           contentPadding: EdgeInsets.symmetric(vertical: 4),
                           border: UnderlineInputBorder(),
@@ -197,14 +237,14 @@ class _InputPageState extends State<InputPage> {
                 ),
               ),
               buildInputField("Nama ibu kandung", ibuController),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
               Center(
                 child: ElevatedButton(
                   onPressed: _saveRecipientData,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 221, 235, 157),
                   ),
-                  child: Text("INSERT", style: TextStyle(color: Colors.black)),
+                  child: const Text("INSERT", style: TextStyle(color: Colors.black)),
                 ),
               ),
             ],
@@ -214,7 +254,7 @@ class _InputPageState extends State<InputPage> {
     );
   }
 
-  Widget buildInputField(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text}) {
+  Widget buildInputField(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text, String? Function(String?)? validator}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Row(
@@ -224,12 +264,12 @@ class _InputPageState extends State<InputPage> {
             child: TextFormField(
               controller: controller,
               keyboardType: keyboardType,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 isDense: true,
                 contentPadding: EdgeInsets.symmetric(vertical: 4),
                 border: UnderlineInputBorder(),
               ),
-              validator: (value) {
+              validator: validator ?? (value) { // Gunakan validator yang disediakan atau default
                 if (value == null || value.isEmpty) {
                   return '$label tidak boleh kosong';
                 }

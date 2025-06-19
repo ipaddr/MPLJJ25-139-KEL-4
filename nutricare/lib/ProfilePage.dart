@@ -23,11 +23,11 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Profil'), centerTitle: true),
+      appBar: AppBar(title: const Text('Profil'), centerTitle: true),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: _currentUser == null
-            ? Center(child: Text('Tidak ada pengguna yang masuk.')) // Handle case no user is logged in
+            ? const Center(child: Text('Tidak ada pengguna yang masuk.')) // Handle case no user is logged in
             : FutureBuilder<DocumentSnapshot>(
                 future: FirebaseFirestore.instance
                     .collection('users')
@@ -35,13 +35,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     .get(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   }
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   }
                   if (!snapshot.hasData || !snapshot.data!.exists) {
-                    return Center(child: Text('Data profil tidak ditemukan.'));
+                    return const Center(child: Text('Data profil tidak ditemukan.'));
                   }
 
                   // Data exists, extract it
@@ -57,13 +57,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         children: [
                           CircleAvatar(
                             radius: 40,
-                            backgroundImage: AssetImage(
+                            backgroundImage: const AssetImage(
                                 'assets/images/pfp.jpeg'), // You can make this dynamic too if user uploads profile pic
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           Text(
                             name,
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                           Text(
                             email,
@@ -76,7 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
                       // Menu
                       _buildMenuItem(Icons.settings, 'Edit Profil', () {
@@ -105,11 +105,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap) {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 6),
+      margin: const EdgeInsets.symmetric(vertical: 6),
       child: ListTile(
         leading: Icon(icon),
         title: Text(title),
-        trailing: Icon(Icons.arrow_forward_ios, size: 16),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
         onTap: onTap,
       ),
     );
@@ -119,19 +119,19 @@ class _ProfilePageState extends State<ProfilePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Konfirmasi'),
-        content: Text('Apakah Anda yakin ingin keluar?'),
+        title: const Text('Konfirmasi'),
+        content: const Text('Apakah Anda yakin ingin keluar?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Batal'),
+            child: const Text('Batal'),
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pop();
-              _logout(context);
+              Navigator.of(context).pop(); // Tutup dialog konfirmasi
+              _logout(context); // Panggil fungsi logout
             },
-            child: Text('Keluar'),
+            child: const Text('Keluar'),
           ),
         ],
       ),
@@ -140,6 +140,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _logout(BuildContext context) async {
     await FirebaseAuth.instance.signOut(); // Sign out from Firebase
-    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+    // Gunakan pushAndRemoveUntil untuk menghapus semua rute sebelumnya dan kembali ke LoginPage
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()), // Pastikan LoginPage sudah diimpor dengan benar
+      (Route<dynamic> route) => false, // Ini memastikan semua rute di tumpukan dihapus
+    );
   }
 }
